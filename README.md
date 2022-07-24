@@ -10,7 +10,7 @@ This project is divided into 3 parts (as you can see on the `src` folder)
 
 ## Installation
 
-1. Clone repo
+1. Clone repo `https://github.com/ramilsaavedra/html-react-typescript-chrome-extension-boilerplate.git`
 2. Run `npm i`
 3. `npm run dev` runs the app on development mode or `npm run build` builds the app for production to the `dist` folder.
 4. Open chrome web browser and go to `chrome://extensions`
