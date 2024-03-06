@@ -1,6 +1,6 @@
 {
-  "name": "Getting Started Example",
-  "description": "Build an Extension!",
+  "name": "Tidal Discord Rich Pressence",
+  "description": "An application that tracks Tidal Web Player activity and communicates with an external app to update Discord's Rich Presence accordingly",
   "version": "1.0",
   "manifest_version": 3,
   "background": {
@@ -10,17 +10,17 @@
   "action": {
     "default_popup": "popup/popup.html",
     "default_icon": {
-      "16": "/images/get_started16.png",
-      "32": "/images/get_started32.png",
-      "48": "/images/get_started48.png",
-      "128": "/images/get_started128.png"
+      "16": "/images/icon_16.png",
+      "32": "/images/icon_32.png",
+      "48": "/images/icon_48.png",
+      "128": "/images/icon_128.png"
     }
   },
   "icons": {
-    "16": "/images/get_started16.png",
-    "32": "/images/get_started32.png",
-    "48": "/images/get_started48.png",
-    "128": "/images/get_started128.png"
+    "16": "/images/icon_16.png",
+    "32": "/images/icon_32.png",
+    "48": "/images/icon_48.png",
+    "128": "/images/icon_128.png"
   },
   "options_page": "option/index.html"
 }
