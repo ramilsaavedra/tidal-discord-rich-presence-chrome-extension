@@ -6,7 +6,11 @@
   "background": {
     "service_worker": "background/background.js"
   },
-  "permissions": ["storage", "tabs"],
+  "permissions": ["storage", "tabs", "webRequest"],
+  "host_permissions": [
+    "https://listen.tidal.com/v1/tracks/*",
+    "http://localhost:3001/message/*"
+  ],
   "action": {
     "default_popup": "popup/popup.html",
     "default_icon": {
