@@ -1,5 +1,5 @@
 {
-  "name": "chrome-extension-boilerplate",
+  "name": "tidal-discord-rich-pressence",
   "version": "1.0.0",
   "scripts": {
     "dev": "webpack watch --mode=development --no-devtool --config webpack.config.js",
