@@ -8,9 +8,9 @@
   },
   "permissions": ["storage", "tabs", "webRequest"],
   "host_permissions": [
-    "https://listen.tidal.com/v1/tracks/*",
     "http://localhost:3001/message/*",
-    "https://listen.tidal.com/"
+    "https://listen.tidal.com/*",
+    "https://sp-ad-cf.audio.tidal.com/*"
   ],
   "content_scripts": [
     {

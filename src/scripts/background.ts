@@ -1,6 +1,7 @@
 import { KeepAlivePort } from "../types"
 
 let tabId: chrome.tabs.Tab["id"]
+let isPlaying = false
 
 chrome.runtime.onInstalled.addListener(async () => {
   console.log("Tidal Discord Rich Pressence successfully installed")
@@ -8,6 +9,7 @@ chrome.runtime.onInstalled.addListener(async () => {
 
 // keep the sw alive
 chrome.runtime.onConnect.addListener((port) => {
+  console.log(port, "on connect")
   if (port.name !== "keep-alive") {
     console.log("not keep alive port")
     return
@@ -44,4 +46,13 @@ chrome.webRequest.onCompleted.addListener(
     }
   },
   { urls: ["https://listen.tidal.com/v1/tracks/*"] }
+)
+
+chrome.webRequest.onBeforeRequest.addListener(
+  function (details) {
+    if (details.url.includes("sp-ad-cf.audio")) {
+      console.log("playing", details)
+    }
+  },
+  { urls: ["https://sp-ad-cf.audio.tidal.com/*"] }
 )
