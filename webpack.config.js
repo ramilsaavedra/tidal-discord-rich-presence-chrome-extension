@@ -1,26 +1,26 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
+const path = require("path")
+const HtmlWebpackPlugin = require("html-webpack-plugin")
+const CopyPlugin = require("copy-webpack-plugin")
 
 let config = {
   module: {
     rules: [
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
+        use: "ts-loader",
         exclude: /node_modules/,
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
+        use: ["style-loader", "css-loader"],
         exclude: /\.module\.css$/,
       },
       {
         test: /\.css$/,
         use: [
-          'style-loader',
+          "style-loader",
           {
-            loader: 'css-loader',
+            loader: "css-loader",
             options: {
               importLoaders: 1,
               modules: true,
@@ -32,60 +32,73 @@ let config = {
       {
         test: /\.(jpg|png)$/,
         use: {
-          loader: 'url-loader',
+          loader: "url-loader",
         },
       },
       {
         test: /\.svg$/,
-        loader: 'svg-url-loader',
+        loader: "svg-url-loader",
       },
     ],
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
+    extensions: [".tsx", ".ts", ".js"],
   },
-};
+}
 
 let popupConfig = Object.assign({}, config, {
-  entry: './src/popup/popup.ts',
+  entry: "./src/popup/popup.ts",
   output: {
-    filename: 'popup.js',
-    path: path.resolve(__dirname, 'dist/popup'),
+    filename: "popup.js",
+    path: path.resolve(__dirname, "dist/popup"),
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './src/popup/popup.html',
-      filename: 'popup.html',
+      template: "./src/popup/popup.html",
+      filename: "popup.html",
     }),
     new CopyPlugin({
       patterns: [
-        { from: 'public', to: '../' },
-        { from: 'src/popup/popup.css' },
+        { from: "public", to: "../" },
+        { from: "src/popup/popup.css" },
       ],
     }),
   ],
-});
+})
 
 let optionConfig = Object.assign({}, config, {
-  entry: './src/option/index.tsx',
+  entry: "./src/option/index.tsx",
   output: {
-    filename: 'index.js',
-    path: path.resolve(__dirname, 'dist/option'),
+    filename: "index.js",
+    path: path.resolve(__dirname, "dist/option"),
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './src/option/index.html',
-      filename: 'index.html',
+      template: "./src/option/index.html",
+      filename: "index.html",
     }),
   ],
-});
+})
 
 let backgroundConfig = Object.assign({}, config, {
-  entry: './src/background/background.ts',
+  entry: "./src/scripts/background.ts",
   output: {
-    filename: 'background.js',
-    path: path.resolve(__dirname, 'dist/background'),
+    filename: "background.js",
+    path: path.resolve(__dirname, "dist/scripts"),
   },
-});
+})
 
-module.exports = [popupConfig, optionConfig, backgroundConfig];
+let contentScriptConfig = Object.assign({}, config, {
+  entry: "./src/scripts/content.ts",
+  output: {
+    filename: "content.js",
+    path: path.resolve(__dirname, "dist/scripts"),
+  },
+})
+
+module.exports = [
+  popupConfig,
+  optionConfig,
+  backgroundConfig,
+  contentScriptConfig,
+]

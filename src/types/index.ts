@@ -5,3 +5,7 @@ export type TrackProps = {
   albumImg: string
   tidalUrl: string
 }
+
+export interface KeepAlivePort extends chrome.runtime.Port {
+  _timer?: ReturnType<typeof setTimeout>
+}

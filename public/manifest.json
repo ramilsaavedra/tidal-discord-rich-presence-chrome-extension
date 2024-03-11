@@ -4,12 +4,19 @@
   "version": "1.0",
   "manifest_version": 3,
   "background": {
-    "service_worker": "background/background.js"
+    "service_worker": "scripts/background.js"
   },
   "permissions": ["storage", "tabs", "webRequest"],
   "host_permissions": [
-    "https://listen.tidal.com/v1/tracks/*",
-    "http://localhost:3001/message/*"
+    "http://localhost:3001/message/*",
+    "https://listen.tidal.com/*",
+    "https://sp-ad-cf.audio.tidal.com/*"
+  ],
+  "content_scripts": [
+    {
+      "js": ["scripts/content.js"],
+      "matches": ["https://*.tidal.com/*"]
+    }
   ],
   "action": {
     "default_popup": "popup/popup.html",
