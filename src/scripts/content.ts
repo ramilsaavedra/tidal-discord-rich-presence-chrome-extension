@@ -1,41 +1,69 @@
-let keepAwakePort: chrome.runtime.Port
+const targetNode = document.getElementById("wimp")
+let title: Element
+let artists: Element
+let albumImg: Element
+let playBtn: Element
+let once = 1
 
-function connect() {
-  keepAwakePort = chrome.runtime.connect({ name: "keep-alive" })
-  keepAwakePort.postMessage("Tidal.com is detected")
-  keepAwakePort.onDisconnect.addListener(connect)
-  keepAwakePort.onMessage.addListener((msg) => {
-    console.log("receieved", msg, "from service worker")
-  })
+// @ts-ignore
+// Callback function to execute when mutations are observed
+const callback = (mutationList, observer) => {
+  for (const mutation of mutationList) {
+    if (title === mutation.target) {
+      console.log("im the title")
+    }
+    if (mutation.type === "childList") {
+      if (once === 1) {
+        getTrackElements()
+        once++
+        return
+      }
+    }
+
+    mutationConsoleHandler(mutation)
+  }
 }
 
-chrome.runtime.onMessage.addListener(async (msg) => {
-  await sendMessageToApp(msg)
-})
+// Create an observer instance linked to the callback function
+const observer = new MutationObserver(callback)
 
-async function sendMessageToApp(id: string) {
-  console.log(id, "trackID")
-  await fetch("http://localhost:3001/message", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ id: id }),
-  })
-    .then((response) => response.text())
-    .then((data) => {
-      console.log("Response from Node.js server:", data)
-    })
-    .catch((error) => {
-      console.log("Error:", error.message)
-    })
+// Options for the observer (which mutations to observe)
+const config = { childList: true }
 
-  await fetch("http://localhost:3001", {
-    method: "GET",
-  })
-    .then((res) => console.log(res))
-    .catch((err) => console.log("Error:", err.message))
+// Start observing the target node for configured mutations
+observer.observe(targetNode, config)
+
+function getTrackElements() {
+  try {
+    title = document.querySelector(".wave-text-description-demi")
+
+    artists = document.querySelector("#footerPlayer .artist-link")
+
+    albumImg = document.querySelector("figure[data-test] img")
+
+    playBtn = document.querySelector("#playbackControlBar > div > button")
+
+    observer.observe(title, { characterData: true, subtree: true })
+    observer.observe(artists, { childList: true })
+    observer.observe(albumImg, { attributes: true })
+    // observer.observe(playBtn, { childList: true })
+  } catch (error) {
+    console.log(error.Message)
+  }
 }
 
-connect()
-console.log("Tidal Discord Rich Presence content script")
+function mutationConsoleHandler(mutation: any) {
+  switch (mutation.type) {
+    case "attributes":
+      console.log(`Album Image Source: ${mutation.target.src}`)
+      return
+    case "childList":
+      let artistsName = Array.from(mutation.target.childNodes)
+        .map((artist: Element) => artist.textContent)
+        .join(", ")
+      console.log(`Artists: ${artistsName}`)
+      return
+    case "characterData":
+      console.log(`Title: ${mutation.target.textContent}`)
+  }
+}
