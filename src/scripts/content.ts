@@ -10,6 +10,7 @@ if (validURL) {
   let albumImg: Element
   let playBtn: Element
   let qualityElem: Element
+  let linkElem: Element
 
   let once = 1
   let timer: ReturnType<typeof setTimeout>
@@ -19,6 +20,7 @@ if (validURL) {
   let albumImgUrl: string
   let playBtnState = false
   let quality: string
+  let trackUrl: string
 
   // @ts-ignore
   // Callback function to execute when mutations are observed
@@ -47,6 +49,7 @@ if (validURL) {
       if (mutation.type === "characterData") {
         songTitle = title.textContent
         quality = qualityElem.textContent
+        trackUrl = linkElem.getAttribute("href")
       }
 
       if (mutation.type === "attributes") {
@@ -88,8 +91,10 @@ if (validURL) {
       qualityElem = document.querySelector(
         "button[data-test-media-state-indicator-streaming-quality] > span"
       )
-
       quality = qualityElem.textContent
+
+      linkElem = title.closest("a")
+      trackUrl = linkElem.getAttribute("href")
 
       observer.observe(title, { characterData: true, subtree: true })
       observer.observe(artists, { childList: true })
@@ -112,7 +117,7 @@ if (validURL) {
     timer = setTimeout(async () => {
       const data = await sendTrackDetails()
       console.log(
-        `${songTitle} by ${artistsName} | album image src: ${albumImgUrl} | currently playing: ${playBtnState} | quality: ${quality}`
+        `${songTitle} by ${artistsName} | album image src: ${albumImgUrl} | currently playing: ${playBtnState} | quality: ${quality} | track url: ${trackUrl}`
       )
     }, 500)
   }
@@ -146,6 +151,7 @@ if (validURL) {
           albumImgUrl,
           playBtnState,
           quality,
+          trackUrl,
         }),
       })
 
