@@ -41,14 +41,12 @@ if (validURL) {
         }
 
         // check if there si a changed on quality
-        if (mutation.target === qualityElem) {
-          quality = qualityElem.textContent
-        }
       }
 
       // check if there si a changed on title
       if (mutation.type === "characterData") {
         songTitle = title.textContent
+        quality = qualityElem.textContent
       }
 
       if (mutation.type === "attributes") {
@@ -58,7 +56,7 @@ if (validURL) {
         }
 
         if (mutation.target === albumImg) {
-          albumImgUrl = albumImg.getAttribute("src")
+          albumImgUrl = albumImgUrlHandler(albumImg.getAttribute("srcset"))
         }
       }
 
@@ -69,11 +67,8 @@ if (validURL) {
   // Create an observer instance linked to the callback function
   const observer = new MutationObserver(callback)
 
-  // Options for the observer (which mutations to observe)
-  const config = { childList: true }
-
   // Start observing the target node for configured mutations
-  observer.observe(targetNode, config)
+  observer.observe(targetNode, { childList: true })
 
   function getTrackElements() {
     try {
@@ -84,7 +79,7 @@ if (validURL) {
       artistsName = artistsNameHandler(Array.from(artists.childNodes))
 
       albumImg = document.querySelector("figure[data-test] img")
-      albumImgUrl = albumImg.getAttribute("src")
+      albumImgUrl = albumImgUrlHandler(albumImg.getAttribute("srcset"))
 
       playBtn = document.querySelector(
         "#playbackControlBar > div > button > svg > use"
@@ -114,10 +109,50 @@ if (validURL) {
 
   function mutationConsoleHandler() {
     clearTimeout(timer)
-    timer = setTimeout(() => {
+    timer = setTimeout(async () => {
+      const data = await sendTrackDetails()
       console.log(
         `${songTitle} by ${artistsName} | album image src: ${albumImgUrl} | currently playing: ${playBtnState} | quality: ${quality}`
       )
     }, 500)
+  }
+
+  function albumImgUrlHandler(srcset: string) {
+    const srcs = srcset.split(", ")
+    let maxWidth = 0
+    let maxUrl = ""
+
+    for (const src of srcs) {
+      let parts = src.split(" ")
+
+      if (parseInt(parts[1]) > maxWidth) {
+        maxUrl = parts[0]
+      }
+    }
+
+    return maxUrl
+  }
+
+  async function sendTrackDetails() {
+    try {
+      const response = await fetch("http://localhost:3001/track", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          songTitle,
+          artistsName,
+          albumImgUrl,
+          playBtnState,
+          quality,
+        }),
+      })
+
+      const data = await response.text()
+      return data
+    } catch (error) {
+      console.log(error.message)
+    }
   }
 }
