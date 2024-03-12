@@ -5,7 +5,9 @@ let artists: Element
 let albumImg: Element
 let playBtn: Element
 let qualityElem: Element
+
 let once = 1
+let timer: ReturnType<typeof setTimeout>
 
 let songTitle: string
 let artistsName: string
@@ -106,7 +108,10 @@ function artistsNameHandler(artists: ChildNode[]) {
 }
 
 function mutationConsoleHandler() {
-  console.log(
-    `${songTitle} by ${artistsName} | album image src: ${albumImgUrl} | currently playing: ${playBtnState} | quality: ${quality}`
-  )
+  clearTimeout(timer)
+  timer = setTimeout(() => {
+    console.log(
+      `${songTitle} by ${artistsName} | album image src: ${albumImgUrl} | currently playing: ${playBtnState} | quality: ${quality}`
+    )
+  }, 500)
 }
