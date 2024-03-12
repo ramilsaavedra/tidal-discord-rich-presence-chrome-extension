@@ -15,7 +15,8 @@
   "content_scripts": [
     {
       "js": ["scripts/content.js"],
-      "matches": ["https://*.tidal.com/*"]
+      "matches": ["https://*.tidal.com/*"],
+      "run_at": "document_end"
     }
   ],
   "action": {
