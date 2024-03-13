@@ -24,7 +24,6 @@ if (validURL) {
   // Callback function to execute when mutations are observed
   const callback: MutationCallback = (mutationList, observer) => {
     for (const mutation of mutationList) {
-      console.log(`Mutation ${mutation.type}: ${mutation.target}`)
       if (mutation.target === targetNode) {
         playBtn = document.querySelector(
           "#playbackControlBar > div > button > svg > use"
@@ -89,6 +88,8 @@ function updateTrackDetails() {
 
   if (qualityElem) {
     quality = qualityElem.textContent || "Quality not found"
+  } else {
+    quality = "Normal"
   }
 
   if (linkElem) {
@@ -115,7 +116,7 @@ function mutationConsoleHandler() {
     console.log(
       `${songTitle} by ${artistsName} | album image src: ${albumImgUrl} | currently playing: ${playBtnState} | quality: ${quality} | track url: ${trackUrl}`
     )
-  }, 500)
+  }, 1000)
 }
 
 function albumImgUrlHandler(element: Element) {
