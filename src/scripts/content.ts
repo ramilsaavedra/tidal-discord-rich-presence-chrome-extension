@@ -1,164 +1,166 @@
 let validURL = document.URL.includes("listen")
 
+let title: Element | null
+let artists: Element | null
+let albumImg: Element | null
+let playBtn: Element | null
+let qualityElem: Element | null
+let linkElem: Element | null | undefined
+let durationElem: Element | null
+
+let timer: ReturnType<typeof setTimeout>
+
+let songTitle: string
+let artistsName: string
+let albumImgUrl: string
+let playBtnState = false
+let quality: string
+let trackUrl: string
+
 if (validURL) {
   console.log("Valid URL")
-
   const targetNode = document.getElementById("wimp")
-
-  let title: Element
-  let artists: Element
-  let albumImg: Element
-  let playBtn: Element
-  let qualityElem: Element
-  let linkElem: Element
-
-  let once = 1
-  let timer: ReturnType<typeof setTimeout>
-
-  let songTitle: string
-  let artistsName: string
-  let albumImgUrl: string
-  let playBtnState = false
-  let quality: string
-  let trackUrl: string
-
-  // @ts-ignore
+  // Create an observer instance linked to the callback function
   // Callback function to execute when mutations are observed
-  const callback = (mutationList, observer) => {
+  const callback: MutationCallback = (mutationList, observer) => {
     for (const mutation of mutationList) {
-      // get the initial element
-      if (once === 1) {
-        if (mutation.type === "childList") {
-          getTrackElements()
-          once++
-          mutationConsoleHandler()
-          return
-        }
+      console.log(`Mutation ${mutation.type}: ${mutation.target}`)
+      if (mutation.target === targetNode) {
+        playBtn = document.querySelector(
+          "#playbackControlBar > div > button > svg > use"
+        )
+        durationElem = document.querySelector("#footerPlayer time:last-of-type")
+        initObserver(observer)
       }
 
-      if (mutation.type === "childList") {
-        // check if there is a changed on artist
-        if (mutation.target === artists) {
-          artistsName = artistsNameHandler(Array.from(artists.childNodes))
-        }
-
-        // check if there si a changed on quality
+      if (mutation.target === playBtn) {
+        playBtnState = !playBtn.getAttribute("href")?.includes("_play")
       }
 
-      // check if there si a changed on title
-      if (mutation.type === "characterData") {
-        songTitle = title.textContent
-        quality = qualityElem.textContent
-        trackUrl = linkElem.getAttribute("href")
-      }
-
-      if (mutation.type === "attributes") {
-        // check the if paused or playing
-        if (mutation.target === playBtn) {
-          playBtnState = !playBtn.getAttribute("href").includes("_play")
-        }
-
-        if (mutation.target === albumImg) {
-          albumImgUrl = albumImgUrlHandler(albumImg.getAttribute("srcset"))
-        }
-      }
-
+      getTrackElements()
       mutationConsoleHandler()
     }
   }
 
-  // Create an observer instance linked to the callback function
   const observer = new MutationObserver(callback)
 
   // Start observing the target node for configured mutations
-  observer.observe(targetNode, { childList: true })
+  if (targetNode) {
+    observer.observe(targetNode, { childList: true })
+  }
+}
 
-  function getTrackElements() {
-    try {
-      title = document.querySelector(".wave-text-description-demi")
-      songTitle = title.textContent
+function initObserver(observer: MutationObserver) {
+  if (durationElem && playBtn) {
+    observer.observe(durationElem, { characterData: true, subtree: true })
+    observer.observe(playBtn, {
+      attributes: true,
+    })
+  }
+}
 
-      artists = document.querySelector("#footerPlayer .artist-link")
-      artistsName = artistsNameHandler(Array.from(artists.childNodes))
+function getTrackElements() {
+  try {
+    title = document.querySelector(".wave-text-description-demi")
+    artists = document.querySelector("#footerPlayer .artist-link")
+    albumImg = document.querySelector("#footerPlayer figure[data-test] img")
+    qualityElem = document.querySelector(
+      "button[data-test-media-state-indicator-streaming-quality] > span"
+    )
+    linkElem = title?.closest("a")
 
-      albumImg = document.querySelector("figure[data-test] img")
-      albumImgUrl = albumImgUrlHandler(albumImg.getAttribute("srcset"))
+    updateTrackDetails()
+  } catch (error) {
+    if (error instanceof Error) {
+      console.log("Error :", error.message)
+    }
+  }
+}
 
-      playBtn = document.querySelector(
-        "#playbackControlBar > div > button > svg > use"
-      )
+function updateTrackDetails() {
+  if (artists) {
+    artistsName =
+      artistsNameHandler(artists.childNodes) || "Artists name not found"
+  }
 
-      qualityElem = document.querySelector(
-        "button[data-test-media-state-indicator-streaming-quality] > span"
-      )
-      quality = qualityElem.textContent
+  if (title) {
+    songTitle = title.textContent || "Title not found"
+  }
 
-      linkElem = title.closest("a")
-      trackUrl = linkElem.getAttribute("href")
+  if (qualityElem) {
+    quality = qualityElem.textContent || "Quality not found"
+  }
 
-      observer.observe(title, { characterData: true, subtree: true })
-      observer.observe(artists, { childList: true })
-      observer.observe(albumImg, { attributes: true })
-      observer.observe(playBtn, {
-        attributes: true,
-      })
-      observer.observe(qualityElem, { characterData: true, subtree: true })
-    } catch (error) {
-      console.log(error.message)
+  if (linkElem) {
+    trackUrl = linkElem.getAttribute("href") || "Track URL not found"
+  }
+
+  if (albumImg) {
+    albumImgUrl = albumImgUrlHandler(albumImg) || "Album image not found"
+  }
+}
+
+function artistsNameHandler(artists: NodeListOf<ChildNode>) {
+  if (artists) {
+    return Array.from(artists)
+      .map((artist) => artist.textContent)
+      .join(", ")
+  }
+}
+
+function mutationConsoleHandler() {
+  clearTimeout(timer)
+  timer = setTimeout(async () => {
+    const data = await sendTrackDetails()
+    console.log(
+      `${songTitle} by ${artistsName} | album image src: ${albumImgUrl} | currently playing: ${playBtnState} | quality: ${quality} | track url: ${trackUrl}`
+    )
+  }, 500)
+}
+
+function albumImgUrlHandler(element: Element) {
+  const srcset = element.getAttribute("srcset")
+  if (!element || !srcset) {
+    return
+  }
+
+  const srcs = srcset.split(", ")
+  let maxWidth = 0
+  let maxUrl = ""
+
+  for (const src of srcs) {
+    let parts = src.split(" ")
+
+    if (parseInt(parts[1]) > maxWidth) {
+      maxUrl = parts[0]
     }
   }
 
-  function artistsNameHandler(artists: ChildNode[]) {
-    return artists.map((artist: Element) => artist.textContent).join(", ")
-  }
+  return maxUrl
+}
 
-  function mutationConsoleHandler() {
-    clearTimeout(timer)
-    timer = setTimeout(async () => {
-      const data = await sendTrackDetails()
-      console.log(
-        `${songTitle} by ${artistsName} | album image src: ${albumImgUrl} | currently playing: ${playBtnState} | quality: ${quality} | track url: ${trackUrl}`
-      )
-    }, 500)
-  }
+async function sendTrackDetails() {
+  try {
+    const response = await fetch("http://localhost:3001/track", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        songTitle,
+        artistsName,
+        albumImgUrl,
+        playBtnState,
+        quality,
+        trackUrl,
+      }),
+    })
 
-  function albumImgUrlHandler(srcset: string) {
-    const srcs = srcset.split(", ")
-    let maxWidth = 0
-    let maxUrl = ""
-
-    for (const src of srcs) {
-      let parts = src.split(" ")
-
-      if (parseInt(parts[1]) > maxWidth) {
-        maxUrl = parts[0]
-      }
-    }
-
-    return maxUrl
-  }
-
-  async function sendTrackDetails() {
-    try {
-      const response = await fetch("http://localhost:3001/track", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          songTitle,
-          artistsName,
-          albumImgUrl,
-          playBtnState,
-          quality,
-          trackUrl,
-        }),
-      })
-
-      const data = await response.text()
-      return data
-    } catch (error) {
-      console.log(error.message)
+    const data = await response.text()
+    return data
+  } catch (error) {
+    if (error instanceof Error) {
+      console.log("Error :", error.message)
     }
   }
 }
