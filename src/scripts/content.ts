@@ -60,7 +60,7 @@ function initObserver(observer: MutationObserver) {
 
 function getTrackElements() {
   try {
-    title = document.querySelector(".wave-text-description-demi")
+    title = document.querySelector("#footerPlayer .wave-text-description-demi")
     artists = document.querySelector("#footerPlayer .artist-link")
     albumImg = document.querySelector("#footerPlayer figure[data-test] img")
     qualityElem = document.querySelector(
