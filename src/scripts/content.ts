@@ -29,6 +29,9 @@ if (validURL) {
           "#playbackControlBar > div > button > svg > use"
         )
         durationElem = document.querySelector("#footerPlayer time:last-of-type")
+        qualityElem = document.querySelector(
+          "button[data-test-media-state-indicator-streaming-quality] > span"
+        )
         initObserver(observer)
       }
 
@@ -50,11 +53,12 @@ if (validURL) {
 }
 
 function initObserver(observer: MutationObserver) {
-  if (durationElem && playBtn) {
+  if (durationElem && playBtn && qualityElem) {
     observer.observe(durationElem, { characterData: true, subtree: true })
     observer.observe(playBtn, {
       attributes: true,
     })
+    observer.observe(qualityElem, { characterData: true, subtree: true })
   }
 }
 
@@ -63,9 +67,6 @@ function getTrackElements() {
     title = document.querySelector("#footerPlayer .wave-text-description-demi")
     artists = document.querySelector("#footerPlayer .artist-link")
     albumImg = document.querySelector("#footerPlayer figure[data-test] img")
-    qualityElem = document.querySelector(
-      "button[data-test-media-state-indicator-streaming-quality] > span"
-    )
     linkElem = title?.closest("a")
 
     updateTrackDetails()
