@@ -52,6 +52,7 @@ function qualityElemStyleHandler(quality: string, element: Element) {
       return
     case "Maxflac":
       element.classList.add("max")
+      element.textContent = "MAX | FLAC"
       return
     default:
       element.classList.add("normal")
