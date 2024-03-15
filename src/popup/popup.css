@@ -13,6 +13,7 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 14px;
 }
 
 #track-info {
@@ -22,4 +23,13 @@ main {
   padding: 2px;
   text-align: start;
   text-wrap: nowrap;
+}
+
+#title {
+  font-weight: bold;
+  color: #fff;
+}
+
+#artists {
+  color: rgba(255, 255, 255, 0.6);
 }
