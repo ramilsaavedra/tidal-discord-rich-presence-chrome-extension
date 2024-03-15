@@ -18,7 +18,7 @@ main {
 
 #track-info {
   display: grid;
-  grid-gap: 5px;
+  grid-gap: 6px;
   margin-left: 10px;
   padding: 2px;
   text-align: start;
@@ -32,4 +32,31 @@ main {
 
 #artists {
   color: rgba(255, 255, 255, 0.6);
+}
+
+#quality {
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 8px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  justify-self: start;
+  display: flex;
+  align-items: center;
+}
+
+.high {
+  color: #3fe;
+  background-color: #21feec1a;
+}
+
+.max {
+  background-color: #ffd4321a;
+  color: #ffd432;
+}
+
+.normal {
+  color: fff;
+  background-color: rgba(255, 255, 255, 0.3);
 }

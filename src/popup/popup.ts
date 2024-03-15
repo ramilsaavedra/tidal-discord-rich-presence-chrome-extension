@@ -40,5 +40,21 @@ function updateTrackElemDetails(res: TrackDetailsProps) {
 
   if (qualityElem) {
     qualityElem.textContent = res.quality
+
+    qualityElemStyleHandler(res.quality, qualityElem)
+  }
+}
+
+function qualityElemStyleHandler(quality: string, element: Element) {
+  switch (quality) {
+    case "High":
+      element.classList.add("high")
+      return
+    case "Maxflac":
+      element.classList.add("max")
+      return
+    default:
+      element.classList.add("normal")
+      return
   }
 }

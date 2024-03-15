@@ -89,6 +89,9 @@ function getTrackElements() {
     artistsElem = document.querySelector("#footerPlayer .artist-link")
     albumImgElem = document.querySelector("#footerPlayer figure[data-test] img")
     linkElem = titleElem?.closest("a")
+    qualityElem = document.querySelector(
+      "button[data-test-media-state-indicator-streaming-quality] > span"
+    )
 
     updateTrackDetails()
   } catch (error) {
