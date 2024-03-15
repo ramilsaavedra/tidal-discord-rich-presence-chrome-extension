@@ -1,42 +1,54 @@
-let validURL = document.URL.includes("listen")
-
-let title: Element | null
-let artists: Element | null
-let albumImg: Element | null
-let playBtn: Element | null
+// these are the element holds the state
+let titleElem: Element | null
+let artistsElem: Element | null
+let albumImgElem: Element | null
+let playBtnElem: Element | null
 let qualityElem: Element | null
 let linkElem: Element | null | undefined
 let durationElem: Element | null
 
+// this timer is used to avoild multiple invocations of sending a message to local server (updates the discord rich presence) and other parts of the extension
 let timer: ReturnType<typeof setTimeout>
 
-let songTitle: string
-let artistsName: string
+// these are the state
+let title: string
+let artists: string
 let albumImgUrl: string
-let playBtnState = false
+let isPlaying = false
 let quality: string
 let trackUrl: string
 
+const validURL = document.URL.includes("listen")
+// run the script on listen.tidal.com only
 if (validURL) {
-  console.log("Valid URL")
+  // this is the main element of listen tidal page.
+  // **It may change in the future that can break the whole script
   const targetNode = document.getElementById("wimp")
-  // Create an observer instance linked to the callback function
-  // Callback function to execute when mutations are observed
+
   const callback: MutationCallback = (mutationList, observer) => {
     for (const mutation of mutationList) {
+      // check if the mutation comes from the main element
+      // also this the indication that the listen.tidal page is fully functional
+      // *** It must run only once (as of March 15 it only run once)
       if (mutation.target === targetNode) {
-        playBtn = document.querySelector(
+        // these are the elements to observe
+        // playbtnElem to check the isPlaying data
+        // durationElem to check if the track / song / video is changed
+        // qualityElem to check the quality data
+        playBtnElem = document.querySelector(
           "#playbackControlBar > div > button > svg > use"
         )
         durationElem = document.querySelector("#footerPlayer time:last-of-type")
         qualityElem = document.querySelector(
           "button[data-test-media-state-indicator-streaming-quality] > span"
         )
+
+        // intialize the observer on the 3 elements above
         initObserver(observer)
       }
 
-      if (mutation.target === playBtn) {
-        playBtnState = !playBtn.getAttribute("href")?.includes("_play")
+      if (mutation.target === playBtnElem) {
+        isPlaying = !playBtnElem.getAttribute("href")?.includes("_play")
       }
 
       getTrackElements()
@@ -46,28 +58,37 @@ if (validURL) {
 
   const observer = new MutationObserver(callback)
 
-  // Start observing the target node for configured mutations
   if (targetNode) {
     observer.observe(targetNode, { childList: true })
   }
+
+  chrome.runtime.onMessage.addListener(
+    (msg: any, sender: chrome.runtime.MessageSender, response: any) => {
+      console.log(msg)
+    }
+  )
 }
 
 function initObserver(observer: MutationObserver) {
-  if (durationElem && playBtn && qualityElem) {
+  if (durationElem && playBtnElem && qualityElem) {
     observer.observe(durationElem, { characterData: true, subtree: true })
-    observer.observe(playBtn, {
+    observer.observe(playBtnElem, {
       attributes: true,
     })
     observer.observe(qualityElem, { characterData: true, subtree: true })
   }
 }
 
+// everytime there is a change we need to update the elements
+// since sometimes the listen tidal remove or replace the existing element (e.g when you are swithing video to a song or vice versa)
 function getTrackElements() {
   try {
-    title = document.querySelector("#footerPlayer .wave-text-description-demi")
-    artists = document.querySelector("#footerPlayer .artist-link")
-    albumImg = document.querySelector("#footerPlayer figure[data-test] img")
-    linkElem = title?.closest("a")
+    titleElem = document.querySelector(
+      "#footerPlayer .wave-text-description-demi"
+    )
+    artistsElem = document.querySelector("#footerPlayer .artist-link")
+    albumImgElem = document.querySelector("#footerPlayer figure[data-test] img")
+    linkElem = titleElem?.closest("a")
 
     updateTrackDetails()
   } catch (error) {
@@ -78,13 +99,13 @@ function getTrackElements() {
 }
 
 function updateTrackDetails() {
-  if (artists) {
-    artistsName =
-      artistsNameHandler(artists.childNodes) || "Artists name not found"
+  if (artistsElem) {
+    artists =
+      artistsNameHandler(artistsElem.childNodes) || "Artists name not found"
   }
 
-  if (title) {
-    songTitle = title.textContent || "Title not found"
+  if (titleElem) {
+    title = titleElem.textContent || "Title not found"
   }
 
   if (qualityElem) {
@@ -97,8 +118,8 @@ function updateTrackDetails() {
     trackUrl = linkElem.getAttribute("href") || "Track URL not found"
   }
 
-  if (albumImg) {
-    albumImgUrl = albumImgUrlHandler(albumImg) || "Album image not found"
+  if (albumImgElem) {
+    albumImgUrl = albumImgUrlHandler(albumImgElem) || "Album image not found"
   }
 }
 
@@ -112,10 +133,23 @@ function artistsNameHandler(artists: NodeListOf<ChildNode>) {
 
 function mutationConsoleHandler() {
   clearTimeout(timer)
+
   timer = setTimeout(async () => {
     const data = await sendTrackDetails()
+    chrome.runtime.sendMessage({
+      from: "content",
+      subject: "track details",
+      body: {
+        title,
+        artists,
+        albumImgUrl,
+        quality,
+        isPlaying,
+        trackUrl,
+      },
+    })
     console.log(
-      `${songTitle} by ${artistsName} | album image src: ${albumImgUrl} | currently playing: ${playBtnState} | quality: ${quality} | track url: ${trackUrl}`
+      `${title} by ${artists} | album image src: ${albumImgUrl} | currently playing: ${isPlaying} | quality: ${quality} | track url: ${trackUrl}`
     )
   }, 1000)
 }
@@ -149,10 +183,10 @@ async function sendTrackDetails() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        songTitle,
-        artistsName,
+        title,
+        artists,
         albumImgUrl,
-        playBtnState,
+        isPlaying,
         quality,
         trackUrl,
       }),
