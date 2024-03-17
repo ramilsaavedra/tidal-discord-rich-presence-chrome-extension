@@ -6,6 +6,7 @@ body {
   border: none;
   color: #fff;
   font-size: 14px;
+  min-width: 220px;
   display: inline-block;
 }
 
