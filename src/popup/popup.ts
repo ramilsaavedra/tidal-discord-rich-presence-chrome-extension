@@ -22,7 +22,7 @@ window.addEventListener("load", async () => {
 
 function updateTrackElemDetails(res: TrackDetailsProps) {
   const titleElem = document.getElementById("title")
-  const albumImgElem = document.getElementById("albumImg") as HTMLImageElement
+  const albumImgElem = document.getElementById("album-img") as HTMLImageElement
   const artistElem = document.getElementById("artists")
   const qualityElem = document.getElementById("quality")
 
