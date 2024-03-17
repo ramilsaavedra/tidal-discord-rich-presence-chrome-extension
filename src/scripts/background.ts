@@ -1,8 +1,10 @@
 import { TrackDetailsProps } from "../types"
 
 chrome.runtime.onInstalled.addListener(async () => {
-  console.log("Tidal Discord Rich Pressence successfully installed")
+  console.log("Tidal Discord Rich Presence successfully installed")
 })
+
+let tidalTabId: number | undefined
 
 let trackDetails: TrackDetailsProps = {
   title: "",
@@ -22,6 +24,10 @@ chrome.runtime.onMessage.addListener(
 
     // save the track details data from content script
     if (msg.from === "content") {
+      console.log(sender, "sender")
+      if (sender.tab) {
+        tidalTabId = sender.tab.id
+      }
       trackDetails = { ...msg.body }
     }
   }
@@ -29,6 +35,8 @@ chrome.runtime.onMessage.addListener(
 
 chrome.tabs.onRemoved.addListener(
   (tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) => {
-    console.log(`Tab ID: ${tabId} | Info: ${removeInfo}`)
+    if (tidalTabId === tabId) {
+      console.log("Tidal Tab is closed")
+    }
   }
 )
