@@ -34,9 +34,25 @@ chrome.runtime.onMessage.addListener(
 )
 
 chrome.tabs.onRemoved.addListener(
-  (tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) => {
+  async (tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) => {
     if (tidalTabId === tabId) {
+      await clearActivity()
       console.log("Tidal Tab is closed")
     }
   }
 )
+
+async function clearActivity() {
+  try {
+    const response = await fetch("http://localhost:3001/clear", {
+      method: "GET",
+    })
+    const data = await response.text()
+    console.log(`Response : ${data}`)
+    return data
+  } catch (error) {
+    if (error instanceof Error) {
+      console.log("Error :", error.message)
+    }
+  }
+}
