@@ -9,6 +9,7 @@ window.addEventListener("load", async () => {
     }
   )
 
+  // TODO get the status of discord client on service worker
   chrome.runtime.sendMessage(
     {
       from: "popup",
