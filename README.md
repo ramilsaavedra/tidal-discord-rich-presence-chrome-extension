@@ -8,8 +8,7 @@ The Tidal Now Playing Chrome Extension is a tool designed to detect the currentl
 
 - Detects the currently playing track on Tidal's web app.
 - Sends track details (e.g., title, artist, album) to a local web server.
-- Updates Discord rich presence with the track information.
-- Enhances integration possibilities with Discord and Tidal.
+- Updates Discord's rich presence with the track information.
 
 ## Installation
 
@@ -19,6 +18,8 @@ The Tidal Now Playing Chrome Extension is a tool designed to detect the currentl
 4. Enable "Developer mode" in the top right corner.
 5. Click on "Load unpacked" and select the `dist` folder generated in step 2.
 6. The extension should now be installed and visible in your Chrome browser.
+7a. Run the `index-win.exe` for Windows located in the `local` folder.
+7b. Run the `index.js` using node for Linux or macOS located in the `local` folder.
 
 ## Usage
 
