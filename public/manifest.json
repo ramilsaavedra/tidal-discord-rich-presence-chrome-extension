@@ -1,6 +1,6 @@
 {
-  "name": "Tidal Discord Rich Pressence",
-  "description": "An application that tracks Tidal Web Player activity and communicates with an external app to update Discord's Rich Presence accordingly",
+  "name": "Tidal Discord Rich Presence",
+  "description": "An application that tracks Tidal Web Player activity and communicates with an external app to update Discord's Rich Presence",
   "version": "1.0",
   "manifest_version": 3,
   "background": {
@@ -33,6 +33,5 @@
     "32": "/images/icon_32.png",
     "48": "/images/icon_48.png",
     "128": "/images/icon_128.png"
-  },
-  "options_page": "option/index.html"
+  }
 }

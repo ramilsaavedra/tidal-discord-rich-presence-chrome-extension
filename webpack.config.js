@@ -98,7 +98,7 @@ let contentScriptConfig = Object.assign({}, config, {
 
 module.exports = [
   popupConfig,
-  optionConfig,
+  // optionConfig,
   backgroundConfig,
   contentScriptConfig,
 ]
