@@ -6,11 +6,10 @@
   "background": {
     "service_worker": "scripts/background.js"
   },
-  "permissions": ["storage", "tabs", "webRequest"],
+  "permissions": ["tabs"],
   "host_permissions": [
     "http://localhost:3001/message/*",
-    "https://listen.tidal.com/*",
-    "https://sp-ad-cf.audio.tidal.com/*"
+    "https://listen.tidal.com/*"
   ],
   "content_scripts": [
     {
