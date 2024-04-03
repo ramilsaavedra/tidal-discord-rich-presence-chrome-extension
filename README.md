@@ -28,15 +28,6 @@ The Tidal Now Playing Chrome Extension is a tool designed to detect the currentl
 - The extension will automatically detect the currently playing track and send its details to your local web server.
 - Your Discord rich presence will be updated with the track information.
 
-## Configuration
-
-- Modify the extension settings to specify the URL of your local web server.
-- Ensure that your Discord application is configured to accept rich presence updates from external sources.
-
-## Contributing
-
-Contributions are welcome! If you'd like to contribute to the development of this extension, please fork the repository, make your changes, and submit a pull request.
-
 ## Disclaimer
 
 This extension is provided as-is without any warranties. Use it at your own risk.
