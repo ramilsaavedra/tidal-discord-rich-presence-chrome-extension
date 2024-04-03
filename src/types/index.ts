@@ -5,4 +5,6 @@ export type TrackDetailsProps = {
   albumImgUrl: string
   trackUrl: string
   isPlaying: boolean
+  discordClientStatus: string
+  tidalTabStatus: string
 }

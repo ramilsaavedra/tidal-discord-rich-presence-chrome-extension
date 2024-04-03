@@ -7,7 +7,7 @@ let qualityElem: Element | null
 let linkElem: Element | null | undefined
 let durationElem: Element | null
 
-// this timer is used to avoild multiple invocations of sending a message to local server (updates the discord rich presence) and other parts of the extension
+// this timer is used to avoid multiple invocations of sending a message to local server (updates the discord rich presence) and other parts of the extension
 let timer: ReturnType<typeof setTimeout>
 
 // these are the state
@@ -139,6 +139,7 @@ function mutationConsoleHandler() {
 
   timer = setTimeout(async () => {
     const data = await sendTrackDetails()
+
     chrome.runtime.sendMessage({
       from: "content",
       subject: "track details",
@@ -149,8 +150,11 @@ function mutationConsoleHandler() {
         quality,
         isPlaying,
         trackUrl,
+        discordClientStatus: data ? data : "Server not found",
+        tidalTabStatus: "Ready",
       },
     })
+
     console.log(
       `${title} by ${artists} | album image src: ${albumImgUrl} | currently playing: ${isPlaying} | quality: ${quality} | track url: ${trackUrl}`
     )

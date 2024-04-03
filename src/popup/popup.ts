@@ -8,8 +8,6 @@ window.addEventListener("load", async () => {
       }
     }
   )
-
-  // TODO get the status of discord client on service worker
   chrome.runtime.sendMessage(
     {
       from: "popup",
@@ -26,6 +24,10 @@ function updateTrackElemDetails(res: TrackDetailsProps) {
   const albumImgElem = document.getElementById("album-img") as HTMLImageElement
   const artistElem = document.getElementById("artists")
   const qualityElem = document.getElementById("quality")
+  const discordClientStatusElem = document.getElementById(
+    "discord-client-status"
+  )
+  const tidalTabStatusElem = document.getElementById("tidal-tab-status")
 
   if (titleElem) {
     titleElem.textContent = res.title
@@ -36,14 +38,30 @@ function updateTrackElemDetails(res: TrackDetailsProps) {
   }
 
   if (artistElem) {
-    artistElem.textContent = "by " + res.artists
+    if (res.artists) {
+      artistElem.textContent = "by " + res.artists
+    } else {
+      artistElem.textContent = ""
+    }
   }
 
   if (qualityElem) {
     qualityElem.textContent = res.quality
 
-    qualityElemStyleHandler(res.quality, qualityElem)
+    if (res.quality) {
+      qualityElemStyleHandler(res.quality, qualityElem)
+    }
   }
+
+  if (discordClientStatusElem) {
+    discordClientStatusElem.textContent = res.discordClientStatus
+  }
+
+  if (tidalTabStatusElem) {
+    tidalTabStatusElem.textContent = res.tidalTabStatus
+  }
+
+  console.log(res, "res")
 }
 
 function qualityElemStyleHandler(quality: string, element: Element) {

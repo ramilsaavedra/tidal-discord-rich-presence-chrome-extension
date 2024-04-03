@@ -7,12 +7,14 @@ chrome.runtime.onInstalled.addListener(async () => {
 let tidalTabId: number | undefined
 
 let trackDetails: TrackDetailsProps = {
-  title: "",
+  title: "Not Playing",
   artists: "",
-  albumImgUrl: "",
+  albumImgUrl: "/images/icon_128.png",
   quality: "",
   isPlaying: false,
   trackUrl: "",
+  discordClientStatus: "Not Found",
+  tidalTabStatus: "Not Found",
 }
 
 chrome.runtime.onMessage.addListener(
@@ -24,7 +26,6 @@ chrome.runtime.onMessage.addListener(
 
     // save the track details data from content script
     if (msg.from === "content") {
-      console.log(sender, "sender")
       if (sender.tab) {
         tidalTabId = sender.tab.id
       }
@@ -37,6 +38,16 @@ chrome.tabs.onRemoved.addListener(
   async (tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) => {
     if (tidalTabId === tabId) {
       await clearActivity()
+      trackDetails = {
+        title: "Not Playing",
+        artists: "",
+        albumImgUrl: "/images/icon_128.png",
+        quality: "",
+        isPlaying: false,
+        trackUrl: "",
+        discordClientStatus: "Not Found",
+        tidalTabStatus: "Not Found",
+      }
       console.log("Tidal Tab is closed")
     }
   }
