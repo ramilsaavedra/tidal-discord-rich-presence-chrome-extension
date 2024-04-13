@@ -12,6 +12,12 @@ The Tidal Now Playing Chrome Extension is a tool designed to detect the currentl
 
 ## Installation
 
+### Chrome web store
+
+1. Install using the Chrome web store. [Link](https://chromewebstore.google.com/detail/tidal-discord-rich-presen/lnehmemdaeieccibicjpnamckdlgchdf)
+
+### Manual
+
 1. Download the extension files from [GitHub repository](https://github.com/JetNicer/tidal-discord-rich-presence-chrome-extension.git).
 2. Run `npm run build` in the project directory to generate the `dist` folder.
 3. Navigate to `chrome://extensions` in your Chrome browser.
